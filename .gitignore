@@ -1,0 +1,4 @@
+# Dépendances (le dossier le plus lourd, généré par npm)
+node_modules/
+
+.env

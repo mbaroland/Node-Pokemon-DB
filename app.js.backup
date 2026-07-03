@@ -1,0 +1,56 @@
+const express = require('express')
+const bodyParser = require('body-parser')
+const {Sequelize, DataTypes} = require('sequelize')
+const pokemonModel = require('./src/models/pokemon')
+const pokemons = require('./src/db/mock-pokemon')
+const app = express()
+
+const port = 3000
+
+
+
+// Initialisation de l'instance de connexion
+const sequelize = new Sequelize(
+    'pokedex',
+    'postgres',
+    'postgres',
+    {
+        host : 'localhost',
+        port : 5432,
+        dialect : 'postgres',
+        logging : false
+    }
+)
+
+// Tester la connexion avec la méthode authenticate de Sequelize
+sequelize.authenticate()
+    .then(_ => console.log("La connexion à la base de donnée a bien été établie !"))
+    .catch(error  => console.log(`Impossible de se connnecter à la base de donnée ${error}`))
+// instanciation du model
+const Pokemon = pokemonModel (sequelize,DataTypes)
+
+// synchronisation 
+sequelize.sync({force : true})
+    .then(_  => {
+        console.log('La Base de données "pokedex" a bien été synchronisée !')
+        // Sauvegarde en base des pokemons contenu dans le fichier mock-pokemon 
+        pokemons.map(pokemon => 
+        Pokemon.create(
+            {
+            name: pokemon.name,
+			hp: pokemon.hp,
+			cp: pokemon.cp,
+			picture: pokemon.picture,
+			types: pokemon.types.join(),
+            }
+        ).then( toto => console.log(toto.toJSON()))
+    )
+})
+
+app.use(bodyParser.json())
+
+app.get('/',(req,res)=> {
+    res.send("Bonjour")
+})
+
+app.listen(port, ()=> console.log(`Votre appli a bien démaré sur le http://localhost:${port}`))
