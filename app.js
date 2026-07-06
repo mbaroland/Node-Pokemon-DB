@@ -21,6 +21,9 @@ require('./src/routes/updatePokemon')(app)
 
 require('./src/routes/deletePokemon')(app)
 
+require('./src/routes/login')(app)
+
+
 //Gestion des erreur 404
 
 app.use(({res}) => {
